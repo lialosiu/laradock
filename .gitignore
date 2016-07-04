@@ -1,3 +1,6 @@
 /logs
 .env
-__data__
+
+/__data__
+
+docker-compose.yml
