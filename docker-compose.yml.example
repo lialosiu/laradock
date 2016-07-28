@@ -45,9 +45,9 @@ services:
             - volumes_source
         volumes:
             - ./logs/nginx/:/var/log/nginx
-        ports:
-            - "80:80"
-            - "443:443"
+        expose:
+            - "80"
+            - "443"
         links:
             - php-fpm
 
@@ -85,8 +85,8 @@ services:
         build: ./mysql
         volumes_from:
             - volumes_data
-        ports:
-            - "3306:3306"
+        expose:
+            - "3306"
         environment:
             MYSQL_DATABASE: homestead
             MYSQL_USER: homestead
@@ -99,8 +99,8 @@ services:
         build: ./postgres
         volumes_from:
             - volumes_data
-        ports:
-            - "5432:5432"
+        expose:
+            - "5432"
         environment:
             POSTGRES_DB: homestead
             POSTGRES_USER: homestead
@@ -112,8 +112,8 @@ services:
         build: ./mariadb
         volumes_from:
             - volumes_data
-        ports:
-            - "3306:3306"
+        expose:
+            - "3306"
         environment:
             MYSQL_DATABASE: homestead
             MYSQL_USER: homestead
@@ -124,9 +124,9 @@ services:
 
     neo4j:
         build: ./neo4j
-        ports:
-            - "7474:7474"
-            - "1337:1337"
+        expose:
+            - "7474"
+            - "1337"
         environment:
             - NEO4J_AUTH=homestead:secret
         volumes_from:
@@ -136,8 +136,8 @@ services:
 
     mongo:
         build: ./mongo
-        ports:
-            - "27017:27017"
+        expose:
+            - "27017"
         volumes_from:
             - volumes_data
 
@@ -147,8 +147,8 @@ services:
         build: ./redis
         volumes_from:
             - volumes_data
-        ports:
-            - "6379:6379"
+        expose:
+            - "6379"
 
 ### Memcached Container #####################################
 
@@ -156,8 +156,8 @@ services:
         build: ./memcached
         volumes_from:
             - volumes_data
-        ports:
-            - "11211:11211"
+        expose:
+            - "11211"
         links:
             - php-fpm
 
@@ -165,8 +165,8 @@ services:
 
     beanstalkd:
         build: ./beanstalkd
-        ports:
-            - "11300:11300"
+        expose:
+            - "11300"
         privileged: true
         links:
             - php-fpm
@@ -175,8 +175,8 @@ services:
 
     beanstalkd-console:
         build: ./beanstalkd-console
-        ports:
-            - "2080:2080"
+        expose:
+            - "2080"
         links:
             - beanstalkd
 
@@ -200,19 +200,19 @@ services:
     volumes_source:
         build: ./volumes/application
         volumes:
-            - ../:/var/www/laravel
+            - ../laravel/:/var/www/laravel
 
 ### Databases Data Container ################################
 
     volumes_data:
         build: ./volumes/data
         volumes:
-            - /var/lib/mysql:/var/lib/mysql
-            - /var/lib/postgres:/var/lib/postgres
-            - /var/lib/mariadb:/var/lib/mariadb
-            - /var/lib/memcached:/var/lib/memcached
-            - /var/lib/redis:/data
-            - /var/lib/neo4j:/var/lib/neo4j/data
-            - /var/lib/mongo:/data/db
+            - ./__data__/mysql:/var/lib/mysql
+            - ./__data__/postgres:/var/lib/postgres
+            - ./__data__/mariadb:/var/lib/mariadb
+            - ./__data__/memcached:/var/lib/memcached
+            - ./__data__/redis:/data
+            - ./__data__/neo4j:/var/lib/neo4j/data
+            - ./__data__/mongo:/data/db
 
 ### Add more Containers below ###############################
