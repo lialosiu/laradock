@@ -70,17 +70,18 @@ ARG PGID=1000
 RUN groupadd -g $PGID laradock && \
     useradd -u $PUID -g laradock -m laradock
     
-# Now switch to our laradock user for the rest of user setup
-USER laradock
-
 #####################################
 # Composer:
 #####################################
 
 # Add the composer.json
-ADD ./composer.json /home/laradock/.composer/composer.json
+COPY ./composer.json /home/laradock/.composer/composer.json
 
-# Check if global install need to be runned
+# Make sure that ~/.composer belongs to laradock
+RUN chown -R laradock:laradock /home/laradock/.composer
+USER laradock
+
+# Check if global install need to be ran
 ARG COMPOSER_GLOBAL_INSTALL=true
 ENV COMPOSER_GLOBAL_INSTALL ${COMPOSER_GLOBAL_INSTALL}
 RUN if [ ${COMPOSER_GLOBAL_INSTALL} = true ]; then \
