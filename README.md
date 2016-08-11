@@ -195,7 +195,7 @@ What's better than a **Demo Video**:
 
 1 - Clone the `LaraDock` repository:
 
-**A)** If you already have a Laravel project, clone this repository on your `Laravel` root direcotry:
+**A)** If you already have a Laravel project, clone this repository on your `Laravel` root directory:
 
 ```bash
 git submodule add https://github.com/LaraDock/laradock.git
@@ -351,7 +351,7 @@ docker-compose down
 2 - enter any container using:
 
 ```bash
-docker-composer exec {container-name} bash
+docker-compose exec {container-name} bash
 ```
 
 *Example: enter MySQL container*
@@ -951,7 +951,7 @@ sudo chmod -R 777 storage bootstrap/cache
 
 #### I see "Welcome to nginx" instead of the Laravel App!
 
-Use `http://127.0.0.1` (or [your Docker IP](#Find-Docker-IP-Address)) instead of `http://localhost` in your browser.
+Use `http://127.0.0.1` instead of `http://localhost` in your browser.
 
 #### I see an error message containing `address already in use`
 
