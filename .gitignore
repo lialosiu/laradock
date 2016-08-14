@@ -1,6 +1,6 @@
 /logs
 /data
 .env
+.idea
 docker-compose.yml
 /__data__
-.idea
