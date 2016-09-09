@@ -13,10 +13,14 @@ It's like Laravel Homestead but for Docker instead of Vagrant.
 
 ![](https://s31.postimg.org/nbettdki3/lara_dock_poster_new.jpg)
 
+
+
 <br>
 ## Contents
 
-
+- [Readme Languages](#)
+	- [English (Default)](#)
+	- [Chinese](https://github.com/LaraDock/laradock/blob/master/README-zh.md)
 - [Intro](#Intro)
 	- [Features](#features)
 	- [Supported Software's](#Supported-Containers)
@@ -44,6 +48,9 @@ It's like Laravel Homestead but for Docker instead of Vagrant.
 		- [Run Artisan Commands](#Run-Artisan-Commands)
 		- [Use Redis](#Use-Redis)
 		- [Use Mongo](#Use-Mongo)
+		- [Use phpMyAdmin](#Use-phpMyAdmin)
+		- [Use pgAdmin](#Use-pgAdmin)
+		- [Use ElasticSearch](#Use-ElasticSearch)
 	- [PHP](#PHP)
 		- [Install PHP Extensions](#Install-PHP-Extensions)
 		- [Change the PHP-FPM Version](#Change-the-PHP-FPM-Version)
@@ -115,6 +122,7 @@ Let's see how easy it is to install `NGINX`, `PHP`, `Composer`, `MySQL` and `Red
 - **Cache Engines:**
 	- Redis
 	- Memcached
+	- Aerospike
 - **PHP Servers:**
 	- NGINX
 	- Apache2
@@ -124,8 +132,12 @@ Let's see how easy it is to install `NGINX`, `PHP`, `Composer`, `MySQL` and `Red
 	- HHVM
 - **Message Queueing Systems:**
 	- Beanstalkd (+ Beanstalkd Console)
+	- RabbitMQ (+ RabbitMQ Console)
 - **Tools:**
 	- Workspace (PHP7-CLI, Composer, Git, Node, Gulp, SQLite, Vim, Nano, cURL...)
+	- phpMyAdmin
+	- pgAdmin
+	- ElasticSearch
 
 
 >If you can't find your Software, build it yourself and add it to this list. Contributions are welcomed :)
@@ -187,8 +199,8 @@ What's better than a **Demo Video**:
 <a name="Requirements"></a>
 ## Requirements
 
-- [Git](https://git-scm.com/downloads)                                           
-- [Docker](https://www.docker.com/products/docker/)
+- [Git](https://git-scm.com/downloads)
+- [Docker](https://www.docker.com/products/docker/) `>= 1.12`
 
 
 
@@ -243,7 +255,7 @@ docker-compose up -d  nginx mysql
 
 You can select your own combination of Containers form the list below:
 
-`nginx`, `hhvm`, `php-fpm`, `mysql`, `redis`, `postgres`, `mariadb`, `neo4j`, `mongo`, `apache2`, `caddy`, `memcached`, `beanstalkd`, `beanstalkd-console`, `workspace`.
+`nginx`, `hhvm`, `php-fpm`, `mysql`, `redis`, `postgres`, `mariadb`, `neo4j`, `mongo`, `apache2`, `caddy`, `memcached`, `beanstalkd`, `beanstalkd-console`, `rabbitmq`, `workspace`, `phpmyadmin`, `aerospike`, `pgadmin`, `elasticsearch`.
 
 
 **Note**: `workspace` and `php-fpm` will run automatically in most of the cases, so no need to specify them in the `up` command.
@@ -492,7 +504,7 @@ Example using Composer
 composer create-project laravel/laravel my-cool-app "5.2.*"
 ```
 
-> We recommand using `composer create-project` instead of the Laravel installer, to install Laravel.
+> We recommend using `composer create-project` instead of the Laravel installer, to install Laravel.
 
 For more about the Laravel installation click [here](https://laravel.com/docs/master#installing-laravel).
 
@@ -702,6 +714,49 @@ More details about this [here](https://github.com/jenssegers/laravel-mongodb#ins
 
 
 <br>
+<a name="Use-phpMyAdmin"></a>
+### Use phpMyAdmin
+
+1 - Run the phpMyAdmin Container (`phpmyadmin`) with the `docker-compose up` command. Example:
+
+```bash
+# use with mysql
+docker-compose up -d mysql phpmyadmin
+
+# use with mariadb
+docker-compose up -d mariadb phpmyadmin
+```
+
+2 - Open your browser and visit the localhost on port **8080**:  `http://localhost:8080`
+
+
+<br>
+<a name="Use-pgAdmin"></a>
+### Use pgAdmin
+
+1 - Run the pgAdmin Container (`pgadmin`) with the `docker-compose up` command. Example:
+
+```bash
+docker-compose up -d postgres pgadmin
+```
+
+2 - Open your browser and visit the localhost on port **5050**:  `http://localhost:5050`
+
+
+<br>
+<a name="Use-ElasticSearch"></a>
+### Use ElasticSearch
+
+1 - Run the ElasticSearch Container (`elasticsearch`) with the `docker-compose up` command. Example:
+
+```bash
+docker-compose up -d elasticsearch
+```
+
+2 - Open your browser and visit the localhost on port **9200**:  `http://localhost:9200`
+
+
+<br>
 <a name="PHP"></a>
 
 
@@ -867,13 +922,6 @@ To controll the behavior of xDebug (in the `php-fpm` Container), you can run the
 
 
 
-
-
-
-
-
-
-
 <br>
 <a name="Misc"></a>
 
@@ -975,13 +1023,48 @@ It should be like this:
 
 3 - Re-build the container `docker-compose build workspace`
 
+<br>
+<a name="Install-Aerospike-Extension"></a>
+### Install Aerospike extension
 
+1 - First install `aerospike` in the Workspace and the PHP-FPM Containers:
+<br>
+a) open the `docker-compose.yml` file
+<br>
+b) search for the `INSTALL_AEROSPIKE_EXTENSION` argument under the Workspace Container
+<br>
+c) set it to `true`
+<br>
+d) search for the `INSTALL_AEROSPIKE_EXTENSION` argument under the PHP-FPM Container
+<br>
+e) set it to `true`
+
+It should be like this:
+
+```yml
+    workspace:
+        build:
+            context: ./workspace
+            args:
+                - INSTALL_AEROSPIKE_EXTENSION=true
+    ...
+    php-fpm:
+        build:
+            context: ./php-fpm
+            args:
+                - INSTALL_AEROSPIKE_EXTENSION=true
+    ...
+```
+
+2 - Re-build the containers `docker-compose build workspace php-fpm`
 
 <br>
 <a name="debugging"></a>
 ### Debugging
 
 *Here's a list of the common problems you might face, and the possible solutions.*
+
+
 
 #### I see a blank (white) page instead of the Laravel 'Welcome' page!
 
@@ -991,14 +1074,25 @@ Run the following command from the Laravel root directory:
 sudo chmod -R 777 storage bootstrap/cache
 ```
 
+
 #### I see "Welcome to nginx" instead of the Laravel App!
 
 Use `http://127.0.0.1` instead of `http://localhost` in your browser.
+
+
 
 #### I see an error message containing `address already in use`
 
 Make sure the ports for the services that you are trying to run (80, 3306, etc.) are not being used already by other programs, such as a built in `apache`/`httpd` service or other development tools you have installed.
 
+
+
+#### I get Nginx error 404 Not Found on Windows.
+
+1. Go to docker Settings on your Windows machine. 
+2. Click on the `Shared Drives` tab and check the drive that contains your project files.
+3. Enter your windows username and password.
+4. Go to the `reset` tab and click restart docker.
 
 
 
@@ -1031,7 +1125,7 @@ Moving from Docker Toolbox (VirtualBox) to Docker Native (for Mac/Windows). Requ
 
 This little project was built by one man who has a full time job and many responsibilities, so if you like this project and you find that it needs a bug fix or support for new software or upgrade any container, or anything else.. Do not hesitate to contribute, you are more than welcome :)
 
-#### Read our [Contribution Guidelines](https://github.com/LaraDock/laradock/blob/master/_guides/contributing.md)
+#### Read the [Contribution Guidelines](https://github.com/LaraDock/laradock/blob/master/CONTRIBUTING.md).
 
 <a name="Help"></a>
 ## Help & Questions
@@ -1050,6 +1144,8 @@ For special help with Docker and/or Laravel, you can schedule a live call with t
 
 **Main Contributors:**
 
+- [Zhqagp](https://github.com/zhqagp)
+- [Tim B (tjb328)](https://github.com/tjb328)
 - [MidasCodeBreaker](https://github.com/midascodebreaker)
 - [Larry Eitel (LarryEitel)](https://github.com/LarryEitel)
 - [Suteepat (tianissimo)](https://github.com/tianissimo)
