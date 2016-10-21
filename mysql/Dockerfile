@@ -1,12 +1,8 @@
-FROM mysql:latest
+FROM mysql:mysql:5.6
 
 MAINTAINER Mahmoud Zalt <mahmoud@zalt.me>
 
-ARG MAX_ALLOWED_PACKET=1M
-ENV MAX_ALLOWED_PACKET ${MAX_ALLOWED_PACKET}
-
-# Set MAX_ALLOWED_PACKET to /etc/mysql/my.cnf
-RUN sed -i "s/^\[mysqld\]$/\[mysqld\]\nmax_allowed_packet = ${MAX_ALLOWED_PACKET}/g" /etc/mysql/my.cnf
+ADD my.cnf /etc/mysql/conf.d/my.cnf
 
 CMD ["mysqld"]
 

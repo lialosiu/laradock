@@ -11,6 +11,7 @@ services:
                 - INSTALL_XDEBUG=false
                 - INSTALL_MONGO=false
                 - INSTALL_NODE=false
+                - INSTALL_YARN=false
                 - INSTALL_DRUSH=false
                 - INSTALL_AEROSPIKE_EXTENSION=false
                 - COMPOSER_GLOBAL_INSTALL=false
@@ -18,6 +19,7 @@ services:
                 - PUID=1000
                 - PGID=1000
                 - NODE_VERSION=stable
+                - TZ=UTC
         volumes_from:
             - volumes_source
         extra_hosts:
@@ -101,10 +103,21 @@ services:
 ### MySQL Container #########################################
 
     mysql:
-        build:
-            context: ./mysql
-            args:
-                - MAX_ALLOWED_PACKET=20M
+        build: ./mysql
+        volumes_from:
+            - volumes_data
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: homestead
+            MYSQL_USER: homestead
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: root
+
+### MariaDB Container #######################################
+
+    mariadb:
+        build: ./mariadb
         volumes_from:
             - volumes_data
         ports:
@@ -127,20 +140,6 @@ services:
             POSTGRES_DB: homestead
             POSTGRES_USER: homestead
             POSTGRES_PASSWORD: secret
-
-### MariaDB Container #######################################
-
-    mariadb:
-        build: ./mariadb
-        volumes_from:
-            - volumes_data
-        ports:
-            - "3306:3306"
-        environment:
-            MYSQL_DATABASE: homestead
-            MYSQL_USER: homestead
-            MYSQL_PASSWORD: secret
-            MYSQL_ROOT_PASSWORD: root
 
 ### Neo4j Container #########################################
 
@@ -237,6 +236,7 @@ services:
         build: ./caddy
         volumes_from:
             - volumes_source
+            - volumes_data
         ports:
             - "80:80"
             - "443:443"
@@ -293,9 +293,6 @@ services:
         image: tianon/true
         volumes:
             - ../laravel/:/var/www/laravel
-            # Demonstration of how to mount multiple sites
-            # - ../../site_a/:/var/www/site_a
-            # - ../../site_b/:/var/www/site_b
 
 ### Databases Data Container ################################
 
@@ -310,6 +307,7 @@ services:
             - ./__data__/mongo:/data/db
             - ./__data__/aerospike:/opt/aerospike/data
             - ./__data__/sessions:/sessions
+            - ./__data__/caddy:/root/.caddy
             - ./__data__/elasticsearch/data:/usr/share/elasticsearch/data
 
 ### Add more Containers below ###############################
