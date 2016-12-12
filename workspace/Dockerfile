@@ -10,7 +10,7 @@
 #    https://hub.docker.com/r/laradock/workspace/tags/
 #
 
-FROM laradock/workspace:1.1
+FROM laradock/workspace:1.2
 
 MAINTAINER Mahmoud Zalt <mahmoud@zalt.me>
 
@@ -91,7 +91,7 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
     apt-get update && \
     apt-get install -y --force-yes php7.0-xdebug && \
     sed -i 's/^/;/g' /etc/php/7.0/cli/conf.d/20-xdebug.ini && \
-    echo "alias phpunit='php -dzend_extension=xdebug.so /var/www/laravel/vendor/bin/phpunit'" >> ~/.bashrc \
+    echo "alias phpunit='php -dzend_extension=xdebug.so /var/www/vendor/bin/phpunit'" >> ~/.bashrc \
 ;fi
 # ADD for REMOTE debugging
 COPY ./xdebug.ini /etc/php/7.0/cli/conf.d/xdebug.ini
@@ -191,9 +191,10 @@ ARG INSTALL_YARN=false
 ENV INSTALL_YARN ${INSTALL_YARN}
 
 RUN if [ ${INSTALL_YARN} = true ]; then \
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
     curl -o- -L https://yarnpkg.com/install.sh | bash && \
-        echo "" >> ~/.bashrc && \
-        echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc \
+    echo "" >> ~/.bashrc && \
+    echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc \
 ;fi
 
 # Add YARN binaries to root's .bashrc
@@ -234,6 +235,16 @@ RUN if [ ${INSTALL_AEROSPIKE_EXTENSION} = false ]; then \
     rm /etc/php/7.0/cli/conf.d/aerospike.ini \
 ;fi
 
+#####################################
+# Non-root user : PHPUnit path
+#####################################
+
+# add ./vendor/bin to non-root user's bashrc (needed for phpunit)
+USER laradock
+
+RUN echo "" >> ~/.bashrc && \
+    echo 'export PATH="/var/www/vendor/bin:$PATH"' >> ~/.bashrc
+
 #
 #--------------------------------------------------------------------------
 # Final Touch
@@ -246,4 +257,4 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set default work directory
-WORKDIR /var/www/laravel
+WORKDIR /var/www
